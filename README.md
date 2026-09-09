@@ -200,6 +200,11 @@ python -m src.acquisition.collect_gdelt --pilot --topics armed_conflict sanction
 
 `--report-only` audits every requested job from retained checkpoints. Missing or
 invalid caches become pending in the report; saved failures remain failures.
+When checkpoint state is absent (for example in a fresh clone), it reconstructs
+the same scoped state in memory from matching numbered raw attempt files. The
+latest attempt determines status and records; recorded attempt counters are
+summed. Malformed evidence is reported as pending, and raw/checkpoint files are
+never written by this mode.
 It preserves historical counters, reports zero new HTTP activity, and cannot be
 combined with `--force`. This is the reproducible way to inspect a partial pilot
 without immediately retrying the service.
@@ -297,6 +302,11 @@ retry exhaustion, JSON validation, window termination, resume/force behavior,
 URL identity, category aggregation, timestamp conversion and QA accounting.
 There is no live integration test in the default suite. The pilot command is
 the explicit live integration run.
+
+The implementation was verified with Python 3.13.3, pandas 2.2.3, openpyxl 3.1.5,
+requests 2.32.3, PyYAML 6.0.3, and pytest 9.1.1. Python 3.10 or newer is required
+by the code's type syntax. These are observed validation versions; the existing
+minimum-version dependency policy in `requirements.txt` is preserved.
 
 The original workbook, compact clean JISDOR CSV, QA, and seven-day pilot raw
 evidence can be tracked. Python caches, logs, checkpoint state, and other

@@ -556,3 +556,118 @@ def test_cli_forwards_report_only(monkeypatch, tmp_path, config, taxonomy):
     monkeypatch.setattr(collector, "collect", fake_collect)
     assert collector.main(["--pilot", "--report-only", "--log-file", str(tmp_path / "run.log")]) == 2
     assert captured["report_only"]
+
+
+def copy_raw_without_checkpoints(source, destination):
+    for file in source.rglob("*.attempt-*.json"):
+        target = destination / file.relative_to(source)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(file.read_bytes())
+
+
+def test_fresh_clone_report_only_reconstructs_latest_records_and_cumulative_counts(tmp_path, config, taxonomy):
+    original_root, clone = tmp_path / "original", tmp_path / "clone"
+    run(original_root, config, taxonomy,
+        FakeClient([[article("old")]], extra_stats={"request_count": 1, "http_429_count": 1, "retry_count": 1}))
+    expected = run(original_root, config, taxonomy, FakeClient([[article("new"), article("new")]]), force=True)
+    expected_csv = (original_root / "clean/gdelt_news_clean.csv").read_bytes()
+    copy_raw_without_checkpoints(original_root / "raw", clone / "raw")
+    original = raw_snapshot(clone / "raw")
+    client = FakeClient([])
+    report = run(clone, config, taxonomy, client, report_only=True)
+    assert report["collection_complete"]
+    assert report["raw_returned_records"] == 2
+    assert report["unique_articles"] == report["duplicate_records"] == 1
+    for key in (*collector.STAT_KEYS, "all_raw_response_records"):
+        assert report[key] == expected[key]
+    assert report["all_raw_response_records"] == 3
+    assert report["request_count"] == 3
+    assert report["this_run_http"] == dict.fromkeys(collector.STAT_KEYS, 0)
+    assert (clone / "clean/gdelt_news_clean.csv").read_bytes() == expected_csv
+    assert not client.calls
+    assert not (clone / "raw/_checkpoints").exists()
+    assert raw_snapshot(clone / "raw") == original
+
+
+def test_fresh_clone_latest_failure_blocks_older_success(tmp_path, config, taxonomy):
+    original_root, clone = tmp_path / "original", tmp_path / "clone"
+    run(original_root, config, taxonomy, FakeClient([[article("old")]]))
+    expected = run(original_root, config, taxonomy, FakeClient([GdeltError("latest attempt failed")]), force=True)
+    copy_raw_without_checkpoints(original_root / "raw", clone / "raw")
+    original = raw_snapshot(clone / "raw")
+    client = FakeClient([])
+    report = run(clone, config, taxonomy, client, report_only=True)
+    assert report["raw_returned_records"] == report["unique_articles"] == 0
+    assert not report["collection_complete"]
+    assert len(report["failed_windows"]) == 1
+    assert report["failed_windows"][0]["error"] == "latest attempt failed"
+    assert report["failed_windows"][0]["attempt"] == 2
+    assert report["all_raw_response_records"] == expected["all_raw_response_records"] == 1
+    assert report["request_count"] == expected["request_count"] == 2
+    assert not client.calls
+    assert raw_snapshot(clone / "raw") == original
+
+
+def test_fresh_clone_reconstructs_split_parent_and_children(tmp_path, config, taxonomy):
+    config["api"].update(max_records=2, minimum_window_minutes=720)
+    original_root, clone = tmp_path / "original", tmp_path / "clone"
+    expected = run(original_root, config, taxonomy, FakeClient([
+        [article("parent-left", "20210901T030000Z"), article("parent-right", "20210901T180000Z")],
+        [article("left", "20210901T030000Z")], [article("right", "20210901T180000Z")],
+    ], max_records=2))
+    copy_raw_without_checkpoints(original_root / "raw", clone / "raw")
+    original = raw_snapshot(clone / "raw")
+    client = FakeClient([], max_records=2)
+    report = run(clone, config, taxonomy, client, report_only=True)
+    assert report["collection_complete"]
+    assert report["window_status_counts"] == {"split": 1, "completed": 2}
+    assert report["raw_returned_records"] == expected["raw_returned_records"] == 2
+    assert report["all_raw_response_records"] == expected["all_raw_response_records"] == 4
+    assert report["request_count"] == expected["request_count"] == 3
+    assert not client.calls
+    assert raw_snapshot(clone / "raw") == original
+
+
+@pytest.mark.parametrize("status", ["pending", "failed"])
+def test_explicit_checkpoint_blocks_raw_reconstruction(tmp_path, config, taxonomy, status):
+    run(tmp_path, config, taxonomy, FakeClient([[article("old")]]))
+    file = next((tmp_path / "raw/_checkpoints").glob("*.json"))
+    state = json.loads(file.read_text())
+    state.update(status=status, error="authoritative state")
+    file.write_text(json.dumps(state))
+    original = raw_snapshot(tmp_path / "raw")
+    report = run(tmp_path, config, taxonomy, FakeClient([]), report_only=True)
+    assert report["raw_returned_records"] == 0
+    assert not report["collection_complete"]
+    assert report["window_status_counts"] == {status: 1}
+    assert raw_snapshot(tmp_path / "raw") == original
+
+
+@pytest.mark.parametrize("corruption", ["filename", "identity", "stats", "records", "json"])
+def test_malformed_matching_raw_attempt_is_explicitly_pending(tmp_path, config, taxonomy, corruption):
+    original_root, clone = tmp_path / "original", tmp_path / "clone"
+    run(original_root, config, taxonomy, FakeClient([[article()]]))
+    copy_raw_without_checkpoints(original_root / "raw", clone / "raw")
+    file = next((clone / "raw").rglob("*.attempt-*.json"))
+    if corruption == "filename":
+        file.rename(file.with_name(file.name.replace("0001", "bad")))
+    elif corruption == "json":
+        file.write_text("{broken")
+    else:
+        envelope = json.loads(file.read_text())
+        if corruption == "identity":
+            envelope["identity"]["query"] = "wrong query"
+        elif corruption == "stats":
+            envelope["attempt_stats"]["request_count"] = "unknown"
+        else:
+            envelope["records"] = [None]
+        file.write_text(json.dumps(envelope))
+    original = raw_snapshot(clone / "raw")
+    client = FakeClient([])
+    report = run(clone, config, taxonomy, client, report_only=True)
+    assert not report["collection_complete"]
+    assert report["raw_returned_records"] == 0
+    assert len(report["pending_jobs"]) == 1
+    assert report["pending_jobs"][0]["raw_attempt_reconstruction_error"]
+    assert not client.calls
+    assert raw_snapshot(clone / "raw") == original

@@ -9,6 +9,7 @@ import json
 import logging
 from pathlib import Path
 import platform
+import re
 import sys
 import tempfile
 
@@ -110,6 +111,64 @@ class WindowCollector:
         self.cache_hits = 0
         self.minimum = api_config.get("minimum_window_minutes", 15)
 
+    def _state_from_raw_attempts(self, identity: dict, key: str,
+                                start: datetime, end: datetime) -> dict:
+        """Reconstruct absent checkpoints in memory for an offline fresh clone.
+
+        Latest numbered evidence controls status; earlier attempts contribute
+        only counters. A malformed matching file makes the window pending,
+        rather than silently selecting older successful evidence.
+        """
+        directory = self.raw_dir / str(start.year) / start.strftime("%Y-%m-%d") / identity["topic"]
+        files = list(directory.glob(f"{key}.attempt-*.json"))
+        if not files:
+            return {}
+        try:
+            params = self.client.request_parameters(identity["query"], start, end)
+            attempts = []
+            for file in files:
+                match = re.fullmatch(rf"{key}\.attempt-(\d+)\.json", file.name)
+                number = int(match[1]) if match else 0
+                if number < 1 or file.name != f"{key}.attempt-{number:04}.json":
+                    raise ValueError(f"Invalid raw attempt filename: {file.name}")
+                envelope = read_json(file)
+                records = envelope.get("records")
+                stats = envelope.get("attempt_stats")
+                count = envelope.get("returned_count", 0)
+                if (envelope.get("identity") != identity
+                        or envelope.get("status") not in {"pending", "failed", "completed", "saturated", "split"}
+                        or not isinstance(records, list)
+                        or not isinstance(stats, dict)
+                        or any(type(stats.get(name)) is not int or stats[name] < 0 for name in STAT_KEYS)
+                        or type(count) is not int or count != len(records)
+                        or any(not isinstance(record, dict)
+                               or record.get("requested_start") != params["startdatetime"]
+                               or record.get("requested_end") != params["enddatetime"]
+                               or record.get("query_category") != identity["topic"]
+                               or record.get("query_string") != identity["query"]
+                               or record.get("logical_start") != identity["logical_start"]
+                               or record.get("logical_end") != identity["logical_end"]
+                               for record in records)):
+                    raise ValueError(f"Invalid raw attempt identity/schema: {file.name}")
+                attempts.append((number, file, envelope))
+            number, file, latest = max(attempts, key=lambda attempt: attempt[0])
+            state = {**identity, "attempt": number, "status": latest["status"],
+                     "raw_file": file.relative_to(self.raw_dir).as_posix(),
+                     "returned_count": latest.get("returned_count", 0),
+                     "stats": {name: sum(envelope["attempt_stats"][name] for _, _, envelope in attempts)
+                               for name in STAT_KEYS},
+                     "all_raw_response_records": sum(envelope.get("returned_count", 0) for _, _, envelope in attempts),
+                     "reconstructed_from_raw_attempts": True}
+            for name in ("error", "response_scope_mismatch"):
+                if name in latest:
+                    state[name] = latest[name]
+            LOG.info("Reconstructed offline checkpoint %s from %s raw attempts", key, len(attempts))
+            return state
+        except (KeyError, TypeError, ValueError, OSError) as error:
+            LOG.warning("Cannot reconstruct offline checkpoint %s: %s", key, error)
+            return {**identity, "status": "pending", "error": str(error),
+                    "raw_attempt_reconstruction_error": str(error)}
+
     def visit(self, topic: str, domain: str, query: str,
               start: datetime, end: datetime) -> list[dict]:
         identity = {"query": query, "topic": topic, "domain": domain,
@@ -124,6 +183,8 @@ class WindowCollector:
             except (ValueError, OSError):
                 LOG.warning("Unreadable checkpoint %s; %s", checkpoint,
                             "pending offline" if self.report_only else "fetching again")
+        elif self.report_only:
+            previous = self._state_from_raw_attempts(identity, key, start, end)
         state = previous
         cached = False
         if not self.force and state.get("status") in {"completed", "saturated", "split"}:
@@ -157,7 +218,7 @@ class WindowCollector:
             state = {**previous, **identity,
                      "status": "failed" if previous.get("status") == "failed" else "pending"}
             if state["status"] == "pending":
-                state["error"] = "No valid cached response is available; collection is required for this window"
+                state.setdefault("error", "No valid cached response is available; collection is required for this window")
             self.nodes[key] = state
             return []
         if not cached:
