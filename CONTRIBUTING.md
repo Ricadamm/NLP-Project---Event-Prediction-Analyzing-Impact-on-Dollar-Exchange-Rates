@@ -56,6 +56,9 @@ Both invocations work now that `pytest.ini` sets `pythonpath = .`.
   reproducibility check on the clean JISDOR CSV, and `ruff check .`. CI must be
   green before a PR is merged.
 - Do not commit `.venv/`, caches, or regenerated files under `data/`.
+- Record anything a teammate would need to know in `CHANGELOG.md` under an
+  `## Unreleased` heading for your branch: new or changed behaviour, new commands,
+  version requirements, and gotchas.
 
 ## Scope note
 
