@@ -1,0 +1,32 @@
+{
+  "attempt_stats": {
+    "http_429_count": 5,
+    "request_count": 6,
+    "retry_count": 5
+  },
+  "error": "GDELT HTTP 429 for 20210901000000..20210902000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+  "identity": {
+    "api_config": {
+      "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+      "boundary_padding_seconds": 1,
+      "format": "json",
+      "initial_retry_delay_seconds": 5,
+      "max_records": 250,
+      "max_retries": 5,
+      "max_retry_delay_seconds": 300,
+      "minimum_request_interval_seconds": 5,
+      "minimum_window_minutes": 15,
+      "mode": "artlist",
+      "request_delay_seconds": 1,
+      "sort": "dateasc",
+      "timeout_seconds": 60
+    },
+    "domain": "reuters.com",
+    "logical_end": "2021-09-02T00:00:00Z",
+    "logical_start": "2021-09-01T00:00:00Z",
+    "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+    "topic": "political_instability"
+  },
+  "records": [],
+  "status": "failed"
+}

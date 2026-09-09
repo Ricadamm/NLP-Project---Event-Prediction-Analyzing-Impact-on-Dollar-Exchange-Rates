@@ -1,0 +1,41 @@
+{
+  "attempt_stats": {
+    "http_429_count": 6,
+    "request_count": 6,
+    "retry_count": 5
+  },
+  "error": "GDELT HTTP 429 for 20210904000000..20210905000000 query='(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+  "identity": {
+    "api_config": {
+      "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+      "boundary_padding_seconds": 1,
+      "format": "json",
+      "initial_retry_delay_seconds": 5,
+      "max_records": 250,
+      "max_retries": 5,
+      "max_retry_delay_seconds": 300,
+      "minimum_request_interval_seconds": 5,
+      "minimum_window_minutes": 15,
+      "mode": "artlist",
+      "request_delay_seconds": 1,
+      "sort": "dateasc",
+      "timeout_seconds": 60
+    },
+    "domain": "reuters.com",
+    "logical_end": "2021-09-05T00:00:00Z",
+    "logical_start": "2021-09-04T00:00:00Z",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "topic": "trade_conflict"
+  },
+  "records": [],
+  "request_parameters": {
+    "enddatetime": "20210905000001",
+    "format": "json",
+    "maxrecords": 250,
+    "mode": "artlist",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "sort": "dateasc",
+    "startdatetime": "20210903235959"
+  },
+  "status": "failed"
+}

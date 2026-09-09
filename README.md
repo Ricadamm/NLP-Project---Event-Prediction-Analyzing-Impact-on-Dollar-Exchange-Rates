@@ -332,3 +332,39 @@ classifier, sentiment model, FinBERT, embeddings, features, train/test split,
 returns, interpolation, target creation, or news/JISDOR alignment is performed.
 Source selection, taxonomy, relevance validation, timestamp interpretation,
 alignment rules, targets and model design remain human research decisions.
+
+### Recorded implementation results (2026-09-09)
+
+JISDOR cleaning passed: 1,202 source observations, 2021-09-01 through 2026-09-01,
+zero duplicate dates or missing date/rate values, and unchanged source SHA-256.
+The CSV independently reconciles to every original workbook observation.
+
+The requested seven-day GDELT pilot is **incomplete**. After bounded retries and
+a resumed run, the service continued returning HTTP 429; the final live run
+stopped at the configured three-consecutive-failed-job threshold.
+
+| Pilot metric | Recorded result |
+|---|---:|
+| Planned daily topic/source jobs | 42 |
+| Completed / failed / pending | 14 / 7 / 21 |
+| Raw terminal records / unique articles / duplicates | 418 / 376 / 42 |
+| Missing URLs / titles / invalid timestamps | 0 / 0 / 0 |
+| Minimum-window saturation | 0 |
+| Returned timestamps beyond individual request bounds | 7 |
+| Checkpointed HTTP 429 / retries | 67 / 64 |
+| Observed HTTP 429 / retry announcements in pipeline logs | 68 / 66 |
+
+The seven timestamp discrepancies are 15-minute boundary spillovers, retained
+unchanged. No minimum-window saturation occurred live; cap detection and
+adaptive splitting were exercised with mocked responses in the offline tests.
+`gdelt_pilot_report.json` lists every failed/pending window and exact scope.
+`gdelt_pilot_execution_observations.json` reconciles checkpointed counters with
+observed log events; one observed 429 and two retry announcements belong to the
+interrupted attempt. A separate initial preflight 429 is outside both pipeline
+counter sets. Unknown in-flight outcomes are not inferred.
+
+The final QA was rebuilt with `--report-only`. A copy of the raw files with no
+checkpoint directory reproduced the exact scoped CSV and counts, without HTTP
+or raw/checkpoint writes. **213 tests passed; 0 failed;
+0 skipped.** The five-year command was not executed. Live API
+availability and the unfinished pilot must be resolved before a full run.

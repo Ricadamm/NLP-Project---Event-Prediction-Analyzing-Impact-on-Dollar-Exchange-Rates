@@ -1,0 +1,94 @@
+{
+  "attempt_stats": {
+    "http_429_count": 0,
+    "request_count": 1,
+    "retry_count": 0
+  },
+  "identity": {
+    "api_config": {
+      "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+      "boundary_padding_seconds": 1,
+      "format": "json",
+      "initial_retry_delay_seconds": 5,
+      "max_records": 250,
+      "max_retries": 5,
+      "max_retry_delay_seconds": 300,
+      "minimum_request_interval_seconds": 5,
+      "minimum_window_minutes": 15,
+      "mode": "artlist",
+      "request_delay_seconds": 1,
+      "sort": "dateasc",
+      "timeout_seconds": 60
+    },
+    "domain": "reuters.com",
+    "logical_end": "2021-09-04T00:00:00Z",
+    "logical_start": "2021-09-03T00:00:00Z",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "topic": "trade_conflict"
+  },
+  "records": [
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-04T00:00:00Z",
+      "logical_start": "2021-09-03T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "retrieved_at_utc": "2026-09-09T08:55:13.548783Z",
+      "seendate": "20210903T180000Z",
+      "socialimage": "https://s1.reutersmedia.net/resources_v2/images/rcom-default.png",
+      "sourcecountry": "United States",
+      "title": "Mediclinic to procure renewable energy in a $152 million deal",
+      "url": "https://www.reuters.com/article/mediclinic-intl-renewables/mediclinic-to-procure-renewable-energy-in-a-152-million-deal-idUSKBN2FZ198",
+      "url_mobile": "https://mobile.reuters.com/article/amp/idUSKBN2FZ198"
+    },
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-04T00:00:00Z",
+      "logical_start": "2021-09-03T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "retrieved_at_utc": "2026-09-09T08:55:13.548783Z",
+      "seendate": "20210903T193000Z",
+      "socialimage": "https://www.reuters.com/resizer/13hj5uaI0ntd-GbhV3aXRtSyc_8=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/653EKVKTMRJHDCFUNGT2ONBBII.jpg",
+      "sourcecountry": "United States",
+      "title": "Mexico adopts firm stance on auto dispute ahead of U . S . talks",
+      "url": "https://www.reuters.com/business/autos-transportation/mexico-takes-firm-line-auto-dispute-ahead-economic-talks-2021-09-03/",
+      "url_mobile": ""
+    },
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-04T00:00:00Z",
+      "logical_start": "2021-09-03T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "retrieved_at_utc": "2026-09-09T08:55:13.548783Z",
+      "seendate": "20210903T223000Z",
+      "socialimage": "https://www.reuters.com/resizer/5S1rc1NOYywxmdGx9aWI0NMtYHQ=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/M7C7ZVR7DBM7DM77IBJN5ZHTFE.jpg",
+      "sourcecountry": "United States",
+      "title": "Mediclinic to procure renewable energy in a $152 mln deal",
+      "url": "https://www.reuters.com/world/africa/mediclinic-procure-renewable-energy-152-mln-deal-2021-09-03/",
+      "url_mobile": ""
+    }
+  ],
+  "request_parameters": {
+    "enddatetime": "20210904000001",
+    "format": "json",
+    "maxrecords": 250,
+    "mode": "artlist",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "sort": "dateasc",
+    "startdatetime": "20210902235959"
+  },
+  "retrieved_at_utc": "2026-09-09T08:55:13.548783Z",
+  "returned_count": 3,
+  "status": "completed"
+}

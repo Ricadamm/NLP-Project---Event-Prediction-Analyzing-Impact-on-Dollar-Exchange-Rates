@@ -1,0 +1,58 @@
+{
+  "count_definitions": {
+    "duplicate_records": "Valid-URL occurrences minus unique normalized URLs",
+    "invalid_timestamps": "Includes missing_timestamps; counted over raw retrieval occurrences",
+    "invalid_urls": "Includes missing_urls; every invalid-URL occurrence is quarantined separately",
+    "quality_flags": "Union of issues observed in any source occurrence of the URL",
+    "records_by_category": "Raw retrieval occurrences, including quarantined records",
+    "records_by_domain": "Deduplicated valid-URL articles; deterministic representative metadata",
+    "records_by_language": "Deduplicated valid-URL articles; deterministic representative metadata"
+  },
+  "duplicate_records": 42,
+  "earliest_article": "2021-09-01T00:00:00+00:00",
+  "invalid_timestamps": 0,
+  "invalid_urls": 0,
+  "latest_article": "2021-09-04T00:15:00+00:00",
+  "missing_timestamps": 0,
+  "missing_titles": 0,
+  "missing_urls": 0,
+  "output_path": "data/interim/news/gdelt_news_clean.csv",
+  "quarantine_path": "data/interim/news/gdelt_news_quarantine.json",
+  "quarantine_records": [],
+  "quarantined_records": 0,
+  "raw_records_by_domain": {
+    "jp.reuters.com": 3,
+    "reuters.com": 415
+  },
+  "raw_records_by_language": {
+    "English": 418
+  },
+  "raw_returned_records": 418,
+  "records_by_category": {
+    "armed_conflict": 172,
+    "energy_geopolitics": 45,
+    "monetary_geoeconomic": 147,
+    "political_instability": 4,
+    "sanctions": 42,
+    "trade_conflict": 8
+  },
+  "records_by_domain": {
+    "jp.reuters.com": 3,
+    "reuters.com": 373
+  },
+  "records_by_language": {
+    "English": 376
+  },
+  "records_with_quality_issues": 0,
+  "timestamp_semantics": "GDELT seendate is first-seen/indexed time, not verified publication time",
+  "unique_articles": 376,
+  "unique_articles_by_category": {
+    "armed_conflict": 172,
+    "energy_geopolitics": 45,
+    "monetary_geoeconomic": 147,
+    "political_instability": 4,
+    "sanctions": 41,
+    "trade_conflict": 8
+  },
+  "unique_articles_with_quality_issues": 0
+}
