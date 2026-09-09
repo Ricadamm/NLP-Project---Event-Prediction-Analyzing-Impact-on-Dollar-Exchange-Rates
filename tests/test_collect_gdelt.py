@@ -414,3 +414,145 @@ def test_cli_pilot_uses_seven_day_default(monkeypatch, tmp_path, config, taxonom
     assert captured["start"] == date(2021, 9, 1)
     assert captured["end"] == date(2021, 9, 7)
     assert captured["pilot"]
+
+
+def raw_snapshot(path):
+    return {file.relative_to(path).as_posix(): file.read_bytes()
+            for file in path.rglob("*") if file.is_file()}
+
+
+def test_report_only_missing_data_is_pending_without_requests_or_raw_files(tmp_path, config, taxonomy):
+    client = FakeClient([])
+    raw = tmp_path / "raw"
+    worker = collector.WindowCollector(client, config["api"], raw, report_only=True)
+    assert worker.visit("armed_conflict", "reuters.com", QUERY, START, END) == []
+    assert not raw.exists()
+    assert next(iter(worker.nodes.values()))["status"] == "pending"
+    report = run(tmp_path, config, taxonomy, client, report_only=True,
+                 end_date=date(2021, 9, 7), pilot=True)
+    assert not client.calls
+    assert not raw.exists()
+    assert report["report_only"]
+    assert report["planned_daily_jobs"] == len(report["pending_jobs"]) == 7
+    assert not report["collection_complete"]
+    assert not report["request_windows_completed"]
+    assert report["this_run_http"] == dict.fromkeys(collector.STAT_KEYS, 0)
+    assert (tmp_path / "clean/gdelt_news_clean.csv").exists()
+
+
+def test_report_only_rebuilds_completed_scope_without_mutating_evidence(tmp_path, config, taxonomy):
+    first = run(tmp_path, config, taxonomy, FakeClient([[article("one"), article("one")]],
+                                                    extra_stats={"http_429_count": 1, "retry_count": 1}))
+    original = raw_snapshot(tmp_path / "raw")
+    clean_bytes = (tmp_path / "clean/gdelt_news_clean.csv").read_bytes()
+    (tmp_path / "clean/gdelt_news_clean.csv").unlink()
+    client = FakeClient([])
+    rebuilt = run(tmp_path, config, taxonomy, client, report_only=True)
+    assert not client.calls
+    assert rebuilt["report_only"] and rebuilt["collection_complete"]
+    assert rebuilt["raw_returned_records"] == first["raw_returned_records"] == 2
+    assert rebuilt["unique_articles"] == rebuilt["duplicate_records"] == 1
+    assert rebuilt["request_count"] == first["request_count"]
+    assert rebuilt["http_429_count"] == rebuilt["retry_count"] == 1
+    assert rebuilt["this_run_http"] == dict.fromkeys(collector.STAT_KEYS, 0)
+    assert raw_snapshot(tmp_path / "raw") == original
+    assert (tmp_path / "clean/gdelt_news_clean.csv").read_bytes() == clean_bytes
+
+
+def test_report_only_preserves_failed_state_and_ignores_network_circuit_breaker(tmp_path, config, taxonomy):
+    config["collection"] = {"max_consecutive_failed_jobs": 1}
+    run(tmp_path, config, taxonomy, FakeClient([GdeltError("historical failure")]),
+        end_date=date(2021, 9, 7), pilot=True)
+    original = raw_snapshot(tmp_path / "raw")
+    client = FakeClient([])
+    report = run(tmp_path, config, taxonomy, client, end_date=date(2021, 9, 7),
+                 pilot=True, report_only=True)
+    assert not client.calls
+    assert len(report["failed_windows"]) == 1
+    assert report["failed_windows"][0]["error"] == "historical failure"
+    assert len(report["pending_jobs"]) == 6
+    assert report["window_status_counts"] == {"failed": 1, "pending": 6}
+    assert report["request_count"] == 1
+    assert raw_snapshot(tmp_path / "raw") == original
+
+
+@pytest.mark.parametrize("corruption", ["missing", "malformed"])
+def test_report_only_invalid_cache_stays_pending_without_repairing_raw(tmp_path, config, taxonomy, corruption):
+    run(tmp_path, config, taxonomy, FakeClient([[article()]]))
+    state = checkpoints(tmp_path / "raw")[0]
+    file = tmp_path / "raw" / state["raw_file"]
+    if corruption == "missing":
+        file.unlink()
+    else:
+        file.write_text("{invalid")
+    original = raw_snapshot(tmp_path / "raw")
+    client = FakeClient([])
+    report = run(tmp_path, config, taxonomy, client, report_only=True)
+    assert not client.calls
+    assert len(report["pending_jobs"]) == 1
+    assert report["raw_returned_records"] == 0
+    assert not report["collection_complete"]
+    assert raw_snapshot(tmp_path / "raw") == original
+
+
+def test_report_only_limits_selected_dates_topics_and_domains(tmp_path, config, taxonomy):
+    taxonomy["sanctions"] = {"keywords": ["sanction"]}
+    config["sources"]["domains"].append("example.com")
+    def records_for_window(query, start, end):
+        suffix = "war" if "(war)" in query else "sanctions"
+        suffix += "-reuters" if "domain:reuters.com" in query else "-example"
+        return [article(f"{start.day}-{suffix}", start.strftime("%Y%m%dT120000Z"))]
+    run(tmp_path, config, taxonomy, FakeClient([records_for_window] * 8), end_date=date(2021, 9, 2))
+    original = raw_snapshot(tmp_path / "raw")
+    client = FakeClient([])
+    report = run(tmp_path, config, taxonomy, client, topics=["sanctions"],
+                 domains=["reuters.com"], report_only=True)
+    assert report["planned_daily_jobs"] == report["raw_returned_records"] == report["unique_articles"] == 1
+    assert report["request_count"] == 1
+    assert report["collection_complete"]
+    clean_text = (tmp_path / "clean/gdelt_news_clean.csv").read_text()
+    assert "1-sanctions-reuters" in clean_text
+    assert "2-sanctions" not in clean_text and "1-war" not in clean_text
+    assert not client.calls
+    assert raw_snapshot(tmp_path / "raw") == original
+
+
+def test_report_only_traverses_cached_split_tree_and_marks_missing_leaf_pending(tmp_path):
+    settings = {"minimum_window_minutes": 720}
+    collector.WindowCollector(FakeClient([
+        [article("parent1"), article("parent2")], [article("left")], [article("right")],
+    ], max_records=2), settings, tmp_path).visit("war", "reuters.com", QUERY, START, END)
+    right_state = next(state for state in checkpoints(tmp_path)
+                       if state["logical_start"] == "2021-09-01T12:00:00Z")
+    (tmp_path / right_state["raw_file"]).unlink()
+    original = raw_snapshot(tmp_path)
+    client = FakeClient([], max_records=2)
+    worker = collector.WindowCollector(client, settings, tmp_path, report_only=True)
+    records = worker.visit("war", "reuters.com", QUERY, START, END)
+    assert [record["title"] for record in records] == ["News left"]
+    assert sorted(state["status"] for state in worker.nodes.values()) == ["completed", "pending", "split"]
+    assert not client.calls
+    assert raw_snapshot(tmp_path) == original
+
+
+def test_force_and_report_only_rejected_before_io(tmp_path, config, taxonomy):
+    with pytest.raises(ValueError, match="cannot be combined"):
+        run(tmp_path, config, taxonomy, FakeClient([]), force=True, report_only=True)
+    with pytest.raises(ValueError, match="cannot be combined"):
+        collector.WindowCollector(FakeClient([]), config["api"], tmp_path / "raw", force=True, report_only=True)
+    log_file = tmp_path / "logs/run.log"
+    with pytest.raises(SystemExit) as failure:
+        collector.main(["--pilot", "--force", "--report-only", "--log-file", str(log_file)])
+    assert failure.value.code == 2
+    assert not list(tmp_path.iterdir())
+
+
+def test_cli_forwards_report_only(monkeypatch, tmp_path, config, taxonomy):
+    captured = {}
+    monkeypatch.setattr(collector, "load_settings", lambda *_: (config, taxonomy))
+    def fake_collect(*args, **kwargs):
+        captured.update(kwargs)
+        return {"collection_complete": False}
+    monkeypatch.setattr(collector, "collect", fake_collect)
+    assert collector.main(["--pilot", "--report-only", "--log-file", str(tmp_path / "run.log")]) == 2
+    assert captured["report_only"]

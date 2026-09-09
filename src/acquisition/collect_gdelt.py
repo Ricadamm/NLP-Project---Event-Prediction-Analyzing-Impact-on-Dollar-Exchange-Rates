@@ -96,11 +96,15 @@ class WindowCollector:
     successfully completed requests. A failed/pending node is retried.
     """
 
-    def __init__(self, client, api_config: dict, raw_dir: Path, force: bool = False):
+    def __init__(self, client, api_config: dict, raw_dir: Path, force: bool = False,
+                 report_only: bool = False):
+        if force and report_only:
+            raise ValueError("--force cannot be combined with --report-only")
         self.client = client
         self.api_config = api_config
         self.raw_dir = Path(raw_dir)
         self.force = force
+        self.report_only = report_only
         self.nodes: dict[str, dict] = {}
         self.new_stats = Counter()
         self.cache_hits = 0
@@ -118,7 +122,8 @@ class WindowCollector:
             try:
                 previous = read_json(checkpoint)
             except (ValueError, OSError):
-                LOG.warning("Unreadable checkpoint %s; fetching again", checkpoint)
+                LOG.warning("Unreadable checkpoint %s; %s", checkpoint,
+                            "pending offline" if self.report_only else "fetching again")
         state = previous
         cached = False
         if not self.force and state.get("status") in {"completed", "saturated", "split"}:
@@ -144,7 +149,17 @@ class WindowCollector:
                 self.cache_hits += 1
                 LOG.info("Resume %s %s %s -> %s", topic, domain, timestamp(start), state["status"])
             except (KeyError, ValueError, OSError):
-                LOG.warning("Missing/invalid cached raw file for %s; fetching again", key)
+                LOG.warning("Missing/invalid cached raw file for %s; %s", key,
+                            "pending offline" if self.report_only else "fetching again")
+        if not cached and self.report_only:
+            # Offline auditing never manufactures a completed empty response,
+            # retries failures, or mutates the evidence being audited.
+            state = {**previous, **identity,
+                     "status": "failed" if previous.get("status") == "failed" else "pending"}
+            if state["status"] == "pending":
+                state["error"] = "No valid cached response is available; collection is required for this window"
+            self.nodes[key] = state
+            return []
         if not cached:
             attempt = int(previous.get("attempt", 0)) + 1
             relative = Path(str(start.year)) / start.strftime("%Y-%m-%d") / topic / f"{key}.attempt-{attempt:04}.json"
@@ -218,7 +233,9 @@ class WindowCollector:
 def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
             topics: list[str] | None = None, domains: list[str] | None = None,
             pilot: bool = False, force: bool = False, raw_dir: Path | None = None,
-            output_dir: Path | None = None, client=None) -> dict:
+            output_dir: Path | None = None, client=None, report_only: bool = False) -> dict:
+    if force and report_only:
+        raise ValueError("--force cannot be combined with --report-only")
     from src.preprocessing.clean_news import write_clean_outputs
 
     if end_date < start_date:
@@ -241,7 +258,7 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
     raw_dir = Path(raw_dir or ROOT / "data/raw/news/gdelt")
     output_dir = Path(output_dir or ROOT / "data/interim/news")
     client = client if client is not None else GdeltClient(config["api"])
-    worker = WindowCollector(client, config["api"], raw_dir, force)
+    worker = WindowCollector(client, config["api"], raw_dir, force, report_only)
     lower = datetime.combine(start_date, datetime.min.time(), UTC)
     upper = datetime.combine(end_date + timedelta(days=1), datetime.min.time(), UTC)
     jobs = [(topic, domain, queries[topic, domain], lower + timedelta(days=i), lower + timedelta(days=i + 1))
@@ -257,7 +274,7 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
         records.extend(worker.visit(topic, domain, query, start, end))
         failed_after = sum(state["status"] == "failed" for state in worker.nodes.values())
         consecutive_failures = consecutive_failures + 1 if failed_after > failed_before else 0
-        if consecutive_failures >= failure_limit:
+        if not report_only and consecutive_failures >= failure_limit:
             LOG.error("Stopping after %s consecutive failed jobs; remaining jobs stay pending", failure_limit)
             pending = [{"topic": t, "domain": d, "query": q, "logical_start": timestamp(s),
                         "logical_end": timestamp(e), "status": "pending"}
@@ -285,12 +302,13 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
     clean_path = output_dir / "gdelt_news_clean.csv"
     _, cleaning = write_clean_outputs(in_scope, clean_path, output_dir / "gdelt_news_cleaning_report.json")
     states = list(worker.nodes.values())
+    pending.extend(state for state in states if state["status"] == "pending")
     failed = [state for state in states if state["status"] == "failed"]
     scope_failed = [state for state in failed if state.get("response_scope_mismatch")]
     saturated = [state for state in states if state["status"] == "saturated"]
     totals = {name: sum(state.get("stats", {}).get(name, 0) for state in states) for name in STAT_KEYS}
     snapshot = {"config": config, "taxonomy": taxonomy}
-    report = {**cleaning, "pilot": pilot, "pilot_start": start_date.isoformat(),
+    report = {**cleaning, "pilot": pilot, "report_only": report_only, "pilot_start": start_date.isoformat(),
               "pilot_end": end_date.isoformat(), "end_date_inclusive": True,
               "topics_queried": selected_topics, "domains_queried": selected_domains,
               "source_language": language, "planned_daily_jobs": len(jobs),
@@ -344,10 +362,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--domains", nargs="+")
     parser.add_argument("--pilot", action="store_true", help="Default to 2021-09-01 through 2021-09-07; maximum seven days")
     parser.add_argument("--force", action="store_true", help="Intentionally re-fetch, preserving earlier raw attempt files")
+    parser.add_argument("--report-only", action="store_true", help="Rebuild scoped CSV and QA from cached checkpoints, with no HTTP or raw/checkpoint writes")
     parser.add_argument("--raw-dir", type=Path)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--log-file", type=Path, default=ROOT / "logs/gdelt_collection.log")
     args = parser.parse_args(argv)
+    if args.force and args.report_only:
+        parser.error("--force cannot be combined with --report-only")
     if args.pilot:
         args.start_date = args.start_date or date(2021, 9, 1)
         args.end_date = args.end_date or date(2021, 9, 7)
@@ -360,7 +381,7 @@ def main(argv: list[str] | None = None) -> int:
         config, taxonomy = load_settings(args.config, args.topics_config)
         report = collect(config, taxonomy, args.start_date, args.end_date, topics=args.topics,
                          domains=args.domains, pilot=args.pilot, force=args.force,
-                         raw_dir=args.raw_dir, output_dir=args.output_dir)
+                         raw_dir=args.raw_dir, output_dir=args.output_dir, report_only=args.report_only)
     except (ValueError, KeyError, OSError, yaml.YAMLError) as error:
         LOG.error("Collection configuration/storage error: %s", error)
         return 1

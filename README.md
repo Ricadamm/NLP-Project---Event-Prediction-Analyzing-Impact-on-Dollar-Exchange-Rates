@@ -190,11 +190,19 @@ rules are deterministic. Reports include the full configuration snapshot.
 python -m src.acquisition.collect_gdelt --start-date 2021-09-01 --end-date 2021-09-07 --pilot
 # Compatibility wrapper:
 python src/scraper_news.py --pilot
+# Rebuild the same scoped CSV and QA offline, without HTTP or checkpoint writes:
+python -m src.acquisition.collect_gdelt --pilot --report-only
 # Intentionally re-fetch the pilot, preserving earlier raw attempts:
 python -m src.acquisition.collect_gdelt --pilot --force
 # Narrow diagnostic selection, if the team chooses it:
 python -m src.acquisition.collect_gdelt --pilot --topics armed_conflict sanctions --domains reuters.com
 ```
+
+`--report-only` audits every requested job from retained checkpoints. Missing or
+invalid caches become pending in the report; saved failures remain failures.
+It preserves historical counters, reports zero new HTTP activity, and cannot be
+combined with `--force`. This is the reproducible way to inspect a partial pilot
+without immediately retrying the service.
 
 The **manual full historical command** below is supplied for the team and was
 not executed during implementation. Validate live access and pilot QA first.
