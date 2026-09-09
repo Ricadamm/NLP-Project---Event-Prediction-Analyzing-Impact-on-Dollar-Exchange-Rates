@@ -1,0 +1,77 @@
+{
+  "attempt_stats": {
+    "http_429_count": 1,
+    "request_count": 2,
+    "retry_count": 1
+  },
+  "identity": {
+    "api_config": {
+      "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+      "boundary_padding_seconds": 1,
+      "format": "json",
+      "initial_retry_delay_seconds": 5,
+      "max_records": 250,
+      "max_retries": 5,
+      "max_retry_delay_seconds": 300,
+      "minimum_request_interval_seconds": 5,
+      "minimum_window_minutes": 15,
+      "mode": "artlist",
+      "request_delay_seconds": 1,
+      "sort": "dateasc",
+      "timeout_seconds": 60
+    },
+    "domain": "reuters.com",
+    "logical_end": "2021-09-02T00:00:00Z",
+    "logical_start": "2021-09-01T00:00:00Z",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "topic": "trade_conflict"
+  },
+  "records": [
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-02T00:00:00Z",
+      "logical_start": "2021-09-01T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210902000001",
+      "requested_start": "20210831235959",
+      "retrieved_at_utc": "2026-09-09T08:24:16.619680Z",
+      "seendate": "20210901T040000Z",
+      "socialimage": "https://www.reuters.com/resizer/Tkz4bt0ksD0jBewVJjE9iwT_ijk=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/5VUCTKF47ROBVF4OP24EOJFOW4.jpg",
+      "sourcecountry": "United States",
+      "title": "First meeting for united kingdom CPTPP inclusion to be held in a month , Japan minister says",
+      "url": "https://www.reuters.com/world/uk/first-meeting-uks-cptpp-inclusion-be-held-month-japan-minister-says-2021-09-01/",
+      "url_mobile": ""
+    },
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-02T00:00:00Z",
+      "logical_start": "2021-09-01T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210902000001",
+      "requested_start": "20210831235959",
+      "retrieved_at_utc": "2026-09-09T08:24:16.619680Z",
+      "seendate": "20210901T071500Z",
+      "socialimage": "https://www.reuters.com/resizer/GRHSO0WVURXnqcfSllRMb5HEtiE=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/JEVSDXPI75MTLLKSHDBPWAUPV4.jpg",
+      "sourcecountry": "United States",
+      "title": "EU planned carbon border tax to impact Russia the most - study",
+      "url": "https://www.reuters.com/business/environment/eus-planned-carbon-border-tax-impact-russia-most-study-2021-09-01/",
+      "url_mobile": ""
+    }
+  ],
+  "request_parameters": {
+    "enddatetime": "20210902000001",
+    "format": "json",
+    "maxrecords": 250,
+    "mode": "artlist",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "sort": "dateasc",
+    "startdatetime": "20210831235959"
+  },
+  "retrieved_at_utc": "2026-09-09T08:24:16.619680Z",
+  "returned_count": 2,
+  "status": "completed"
+}

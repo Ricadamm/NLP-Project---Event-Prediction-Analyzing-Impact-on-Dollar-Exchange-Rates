@@ -1,0 +1,978 @@
+{
+  "all_raw_response_records": 418,
+  "checkpoint_cache_hits": 14,
+  "clean_output": "data\\interim\\news\\gdelt_news_clean.csv",
+  "collection_complete": false,
+  "config_sha256": "affa258be59682f872ee69746c9bb40c1e30792b8bfe58eb2f55040feb102822",
+  "configuration": {
+    "config": {
+      "api": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "collection": {
+        "max_consecutive_failed_jobs": 3
+      },
+      "language": {
+        "source_language": "english"
+      },
+      "sources": {
+        "domains": [
+          "reuters.com"
+        ]
+      },
+      "study": {
+        "end_date": "2026-09-01",
+        "start_date": "2021-09-01"
+      }
+    },
+    "taxonomy": {
+      "armed_conflict": {
+        "keywords": [
+          "war",
+          "invasion",
+          "missile",
+          "airstrike",
+          "ceasefire",
+          "military",
+          "conflict"
+        ]
+      },
+      "energy_geopolitics": {
+        "keywords": [
+          "OPEC",
+          "oil embargo",
+          "oil supply",
+          "energy crisis",
+          "natural gas"
+        ]
+      },
+      "monetary_geoeconomic": {
+        "keywords": [
+          "Federal Reserve",
+          "interest rate",
+          "rate hike",
+          "inflation",
+          "CPI"
+        ]
+      },
+      "political_instability": {
+        "keywords": [
+          "coup",
+          "unrest",
+          "impeachment",
+          "political crisis"
+        ]
+      },
+      "sanctions": {
+        "keywords": [
+          "sanction",
+          "sanctions",
+          "embargo",
+          "asset freeze",
+          "export restriction"
+        ]
+      },
+      "trade_conflict": {
+        "keywords": [
+          "tariff",
+          "tariffs",
+          "trade war",
+          "export ban",
+          "trade restriction"
+        ]
+      }
+    }
+  },
+  "count_definitions": {
+    "all_raw_response_records": "Cumulative saved response occurrences across attempts for visited checkpoint windows, including split parents and failed wrong-period responses; excludes unrelated/orphaned windows",
+    "duplicate_records": "Valid-URL occurrences minus unique normalized URLs",
+    "invalid_timestamps": "Includes missing_timestamps; counted over raw retrieval occurrences",
+    "invalid_urls": "Includes missing_urls; every invalid-URL occurrence is quarantined separately",
+    "quality_flags": "Union of issues observed in any source occurrence of the URL",
+    "raw_returned_records": "Terminal response occurrences only (split parents excluded): unique_articles + duplicate_records + quarantined_records + excluded_boundary_records",
+    "records_by_category": "Raw retrieval occurrences, including quarantined records",
+    "records_by_domain": "Deduplicated valid-URL articles; deterministic representative metadata",
+    "records_by_language": "Deduplicated valid-URL articles; deterministic representative metadata",
+    "records_sent_to_cleaner": "In-scope occurrences, including invalid timestamps for explicit QA"
+  },
+  "domains_queried": [
+    "reuters.com"
+  ],
+  "duplicate_records": 42,
+  "earliest_article": "2021-09-01T00:00:00+00:00",
+  "end_date_inclusive": true,
+  "excluded_boundary_records": 0,
+  "exhaustive_retrieval_claimed": false,
+  "failed_windows": [
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 2,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210901000000..20210902000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-02T00:00:00Z",
+      "logical_start": "2021-09-01T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-01/political_instability/743465ec7789d961a524b896a40dcd33bde140e9e84958d7fc597822bda73621.attempt-0002.json",
+      "stats": {
+        "http_429_count": 11,
+        "request_count": 12,
+        "retry_count": 10
+      },
+      "status": "failed",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210902000000..20210903000000 query='(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-03T00:00:00Z",
+      "logical_start": "2021-09-02T00:00:00Z",
+      "query": "(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-02/energy_geopolitics/533b4a769b0fb75b24260970b2830c9688d2cc977d554f00a5b5f154ccc88f21.attempt-0001.json",
+      "stats": {
+        "http_429_count": 6,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "energy_geopolitics"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210902000000..20210903000000 query='(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-03T00:00:00Z",
+      "logical_start": "2021-09-02T00:00:00Z",
+      "query": "(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-02/monetary_geoeconomic/feeb339adc71480d016de3be89b7421cfbddcb453b7e19e1e77dcbb67493b44d.attempt-0001.json",
+      "stats": {
+        "http_429_count": 6,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "monetary_geoeconomic"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210903000000..20210904000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-04T00:00:00Z",
+      "logical_start": "2021-09-03T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-03/political_instability/d1f2da191c31f45acaba1247d17c45bb9590a30c4afdf22fe57b77405a10ec32.attempt-0001.json",
+      "stats": {
+        "http_429_count": 4,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210904000000..20210905000000 query='(war OR invasion OR missile OR airstrike OR ceasefire OR military OR conflict) domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(war OR invasion OR missile OR airstrike OR ceasefire OR military OR conflict) domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-04/armed_conflict/5b83bf887291da75073cbd70bd7f0726b2735be2905cee86f3b9f1acc280b869.attempt-0001.json",
+      "stats": {
+        "http_429_count": 6,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "armed_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210904000000..20210905000000 query='(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-04/sanctions/565e06c331bb50b3aaed42da3d014bfacfb4e488ca70a094dd09246e29b3f65e.attempt-0001.json",
+      "stats": {
+        "http_429_count": 6,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "sanctions"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "attempt": 1,
+      "domain": "reuters.com",
+      "error": "GDELT HTTP 429 for 20210904000000..20210905000000 query='(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english': Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries. All high-traffic users should switch to our ngrams dataset: https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/. For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-; exhausted 5 retries",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "raw_file": "2021/2021-09-04/trade_conflict/7b12eb68ba08173156fe9f91861747e24733f095e682bac0e914d4deb982c3ac.attempt-0001.json",
+      "stats": {
+        "http_429_count": 6,
+        "request_count": 6,
+        "retry_count": 5
+      },
+      "status": "failed",
+      "topic": "trade_conflict"
+    }
+  ],
+  "generated_at_utc": "2026-09-09T09:21:27.226321Z",
+  "http_429_count": 67,
+  "invalid_timestamps": 0,
+  "invalid_urls": 0,
+  "latest_article": "2021-09-04T00:15:00+00:00",
+  "missing_timestamps": 0,
+  "missing_titles": 0,
+  "missing_urls": 0,
+  "output_path": "data/interim/news/gdelt_news_clean.csv",
+  "pending_jobs": [
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "energy_geopolitics"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-05T00:00:00Z",
+      "logical_start": "2021-09-04T00:00:00Z",
+      "query": "(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "monetary_geoeconomic"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(war OR invasion OR missile OR airstrike OR ceasefire OR military OR conflict) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "armed_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "sanctions"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "trade_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "energy_geopolitics"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-06T00:00:00Z",
+      "logical_start": "2021-09-05T00:00:00Z",
+      "query": "(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "monetary_geoeconomic"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(war OR invasion OR missile OR airstrike OR ceasefire OR military OR conflict) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "armed_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "sanctions"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "trade_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "energy_geopolitics"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-07T00:00:00Z",
+      "logical_start": "2021-09-06T00:00:00Z",
+      "query": "(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "monetary_geoeconomic"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(war OR invasion OR missile OR airstrike OR ceasefire OR military OR conflict) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "armed_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "sanctions"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "trade_conflict"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "energy_geopolitics"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "political_instability"
+    },
+    {
+      "api_config": {
+        "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+        "boundary_padding_seconds": 1,
+        "format": "json",
+        "initial_retry_delay_seconds": 5,
+        "max_records": 250,
+        "max_retries": 5,
+        "max_retry_delay_seconds": 300,
+        "minimum_request_interval_seconds": 5,
+        "minimum_window_minutes": 15,
+        "mode": "artlist",
+        "request_delay_seconds": 1,
+        "sort": "dateasc",
+        "timeout_seconds": 60
+      },
+      "domain": "reuters.com",
+      "error": "No valid cached response is available; collection is required for this window",
+      "logical_end": "2021-09-08T00:00:00Z",
+      "logical_start": "2021-09-07T00:00:00Z",
+      "query": "(\"Federal Reserve\" OR \"interest rate\" OR \"rate hike\" OR inflation OR CPI) domain:reuters.com sourcelang:english",
+      "status": "pending",
+      "topic": "monetary_geoeconomic"
+    }
+  ],
+  "pilot": true,
+  "pilot_end": "2021-09-07",
+  "pilot_start": "2021-09-01",
+  "planned_daily_jobs": 42,
+  "python_version": "3.13.3",
+  "quarantine_path": "data/interim/news/gdelt_news_quarantine.json",
+  "quarantine_records": [],
+  "quarantined_records": 0,
+  "raw_records_by_domain": {
+    "jp.reuters.com": 3,
+    "reuters.com": 415
+  },
+  "raw_records_by_language": {
+    "English": 418
+  },
+  "raw_returned_records": 418,
+  "records_by_category": {
+    "armed_conflict": 172,
+    "energy_geopolitics": 45,
+    "monetary_geoeconomic": 147,
+    "political_instability": 4,
+    "sanctions": 42,
+    "trade_conflict": 8
+  },
+  "records_by_domain": {
+    "jp.reuters.com": 3,
+    "reuters.com": 373
+  },
+  "records_by_language": {
+    "English": 376
+  },
+  "records_sent_to_cleaner": 418,
+  "records_with_quality_issues": 0,
+  "report_only": true,
+  "request_count": 87,
+  "request_windows_completed": false,
+  "retry_count": 64,
+  "saturated_minimum_size_windows": [],
+  "source_language": "english",
+  "this_run_http": {
+    "http_429_count": 0,
+    "request_count": 0,
+    "retry_count": 0
+  },
+  "timestamp_scope_consistent": false,
+  "timestamp_semantics": "GDELT seendate is first-seen/index time, not verified article publication time",
+  "topics_queried": [
+    "armed_conflict",
+    "sanctions",
+    "trade_conflict",
+    "energy_geopolitics",
+    "political_instability",
+    "monetary_geoeconomic"
+  ],
+  "unexpected_out_of_window_records": [
+    {
+      "query_category": "sanctions",
+      "requested_end": "20210902000001",
+      "requested_start": "20210831235959",
+      "seendate": "20210902T001500Z",
+      "url": "https://www.reuters.com/world/americas/cuba-prepares-vaccinate-its-children-entire-population-2021-09-01/"
+    },
+    {
+      "query_category": "armed_conflict",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/world/asia-pacific/us-seen-funding-humanitarian-aid-afghanistan-not-its-goverment-2021-09-03/"
+    },
+    {
+      "query_category": "armed_conflict",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/article/idUSKBN2FZ1RB"
+    },
+    {
+      "query_category": "armed_conflict",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/article/businessNews/idUSKBN2FZ1ZC"
+    },
+    {
+      "query_category": "energy_geopolitics",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/article/innovationNews/idUSKBN2FZ1LW"
+    },
+    {
+      "query_category": "monetary_geoeconomic",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/article/topNews/idUSKBN2FZ09H"
+    },
+    {
+      "query_category": "monetary_geoeconomic",
+      "requested_end": "20210904000001",
+      "requested_start": "20210902235959",
+      "seendate": "20210904T001500Z",
+      "url": "https://www.reuters.com/article/businessNews/idUSKBN2FZ1ZC"
+    }
+  ],
+  "unique_articles": 376,
+  "unique_articles_by_category": {
+    "armed_conflict": 172,
+    "energy_geopolitics": 45,
+    "monetary_geoeconomic": 147,
+    "political_instability": 4,
+    "sanctions": 41,
+    "trade_conflict": 8
+  },
+  "unique_articles_with_quality_issues": 0,
+  "unsaturated_retrieval": true,
+  "warnings": [
+    "Retrieved articles are candidates; relevance and archive coverage are unvalidated.",
+    "Pilot/collection is incomplete: failed or pending requests are not zero-news observations.",
+    "API timestamp scope mismatch: some returned seendate values fall outside submitted bounds. Precise DOC boundary/index-time semantics remain unverified; raw timestamps are retained without adjustment."
+  ],
+  "window_status_counts": {
+    "completed": 14,
+    "failed": 7,
+    "pending": 21
+  }
+}

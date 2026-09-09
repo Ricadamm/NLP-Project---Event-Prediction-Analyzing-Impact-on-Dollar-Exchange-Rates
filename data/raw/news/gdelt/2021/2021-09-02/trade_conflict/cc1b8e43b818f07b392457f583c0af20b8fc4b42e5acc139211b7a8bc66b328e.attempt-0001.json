@@ -1,0 +1,94 @@
+{
+  "attempt_stats": {
+    "http_429_count": 0,
+    "request_count": 1,
+    "retry_count": 0
+  },
+  "identity": {
+    "api_config": {
+      "base_url": "https://api.gdeltproject.org/api/v2/doc/doc",
+      "boundary_padding_seconds": 1,
+      "format": "json",
+      "initial_retry_delay_seconds": 5,
+      "max_records": 250,
+      "max_retries": 5,
+      "max_retry_delay_seconds": 300,
+      "minimum_request_interval_seconds": 5,
+      "minimum_window_minutes": 15,
+      "mode": "artlist",
+      "request_delay_seconds": 1,
+      "sort": "dateasc",
+      "timeout_seconds": 60
+    },
+    "domain": "reuters.com",
+    "logical_end": "2021-09-03T00:00:00Z",
+    "logical_start": "2021-09-02T00:00:00Z",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "topic": "trade_conflict"
+  },
+  "records": [
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-03T00:00:00Z",
+      "logical_start": "2021-09-02T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210903000001",
+      "requested_start": "20210901235959",
+      "retrieved_at_utc": "2026-09-09T08:42:49.480256Z",
+      "seendate": "20210902T093000Z",
+      "socialimage": "https://www.reuters.com/resizer/z3ne7qR__5bwOwevY_ugrtV4Ygg=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/BNUWGJO6U5LHFA6E3ZNY4FIFAM.jpg",
+      "sourcecountry": "United States",
+      "title": "European court says German energy regulatory methods are insufficient",
+      "url": "https://www.reuters.com/business/energy/european-court-says-german-energy-regulatory-methods-are-insufficient-2021-09-02/",
+      "url_mobile": ""
+    },
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-03T00:00:00Z",
+      "logical_start": "2021-09-02T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210903000001",
+      "requested_start": "20210901235959",
+      "retrieved_at_utc": "2026-09-09T08:42:49.480256Z",
+      "seendate": "20210902T154500Z",
+      "socialimage": "https://www.reuters.com/resizer/UNzRkRzIlS_qT_WL-dhS2VsiQBo=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/CAXVITN62VPN5DAVIHXEVJHJBM.jpg",
+      "sourcecountry": "United States",
+      "title": "Special Report : How the Chinese tycoon driving Volvo plans to tackle Tesla",
+      "url": "https://www.reuters.com/business/autos-transportation/how-chinese-tycoon-driving-volvo-plans-tackle-tesla-2021-09-02/",
+      "url_mobile": ""
+    },
+    {
+      "domain": "reuters.com",
+      "language": "English",
+      "logical_end": "2021-09-03T00:00:00Z",
+      "logical_start": "2021-09-02T00:00:00Z",
+      "query_category": "trade_conflict",
+      "query_string": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+      "requested_end": "20210903000001",
+      "requested_start": "20210901235959",
+      "retrieved_at_utc": "2026-09-09T08:42:49.480256Z",
+      "seendate": "20210902T194500Z",
+      "socialimage": "https://www.reuters.com/resizer/kPxep8XN7z2g4CbndKOdtIhA3d8=/1200x628/smart/filters:quality(80)/cloudfront-us-east-2.images.arcpublishing.com/reuters/F67YP6WLSJKTZM7JKBRI5I22I4.jpg",
+      "sourcecountry": "United States",
+      "title": "WTO backs U . S . in solar cell case brought by China",
+      "url": "https://www.reuters.com/business/wto-backs-us-solar-panel-case-brought-by-china-2021-09-02/",
+      "url_mobile": ""
+    }
+  ],
+  "request_parameters": {
+    "enddatetime": "20210903000001",
+    "format": "json",
+    "maxrecords": 250,
+    "mode": "artlist",
+    "query": "(tariff OR tariffs OR \"trade war\" OR \"export ban\" OR \"trade restriction\") domain:reuters.com sourcelang:english",
+    "sort": "dateasc",
+    "startdatetime": "20210901235959"
+  },
+  "retrieved_at_utc": "2026-09-09T08:42:49.480256Z",
+  "returned_count": 3,
+  "status": "completed"
+}

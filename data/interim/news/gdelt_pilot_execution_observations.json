@@ -1,0 +1,136 @@
+{
+  "complete_log_lines_scanned": 249,
+  "data_verification": {
+    "fresh_clone_clean_csv_byte_identical": true,
+    "fresh_clone_counts_and_statuses_match": true,
+    "offline_http_calls": 0,
+    "original_workbook_unchanged": true,
+    "raw_and_checkpoint_bytes_unchanged": true,
+    "raw_count_reconciles": true
+  },
+  "duplicate_matching_event_lines_ignored": 0,
+  "durable_checkpoint_snapshot": {
+    "checkpoint_count": 21,
+    "counters": {
+      "http_429_count": 67,
+      "request_count": 87,
+      "retry_count": 64
+    },
+    "read_errors": [],
+    "status_counts": {
+      "completed": 14,
+      "failed": 7
+    }
+  },
+  "execution_note": "The first process was paused to enforce five idle seconds after responses, then resumed with successful checkpoints reused. The final live run stopped after three consecutive daily jobs exhausted all configured retries.",
+  "first_log_timestamp_local_unspecified_zone": "2026-09-09 15:07:25,170",
+  "generated_at_utc": "2026-09-09T09:21:29.121254+00:00",
+  "last_log_timestamp_local_unspecified_zone": "2026-09-09 16:20:15,704",
+  "log_bytes_read": 86617,
+  "log_changed_during_audit": false,
+  "log_path": "logs/gdelt_collection.log",
+  "log_snapshot_sha256": "5adf58472dd6425f3393336c308ff937aaa8bee40f7e3b29ca90c635e61c6d00",
+  "notes": [
+    "Pipeline log counts exclude the initial single-request preflight HTTP 429, which was recorded separately.",
+    "Interrupted requests may have an unknown outcome; no unlogged request or HTTP status is inferred.",
+    "Retry announcements count scheduled retries and may include a retry announced immediately before interruption that never started.",
+    "HTTP statuses count only client INFO response lines. Transport failures count only client WARNING attempt lines, excluding their duplicate retry-warning descriptions.",
+    "Durable checkpoint counters finalize logical-window attempts; interruption can leave observed execution events absent from those counters.",
+    "Checkpoint counters sum all current checkpoint files. They are not inferred from logs and may span active query/configuration identities.",
+    "Log and checkpoint snapshots are read sequentially while collection may continue; rerun after the process stops for final reconciliation.",
+    "Log timestamps have no recorded timezone and are preserved as written; generated_at_utc is an explicit UTC audit timestamp.",
+    "Observed article totals sum successful response counts, including retries/forced runs/parent windows if present; they are not deduplicated study article counts."
+  ],
+  "observed_articles_across_successful_responses": 418,
+  "observed_attempts_with_logged_outcomes": 89,
+  "observed_http_429_count": 68,
+  "observed_http_response_count": 82,
+  "observed_http_statuses": {
+    "200": 14,
+    "429": 68
+  },
+  "observed_minus_durable": {
+    "http_429_count": 1,
+    "logged_outcomes_minus_recorded_request_count": 2,
+    "retry_announcements_minus_recorded_retries": 2
+  },
+  "observed_other_request_error_count": 0,
+  "observed_retry_announcements": 66,
+  "observed_successful_article_list_responses": 14,
+  "observed_transport_failure_attempt_records": [
+    {
+      "attempt_in_logical_request": 1,
+      "log_line": 34,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:14:42,559",
+      "logical_end": "20210902000000",
+      "logical_start": "20210901000000",
+      "message": "GDELT transport failure for 20210901000000..20210902000000 query='(OPEC OR \"oil embargo\" OR \"oil supply\" OR \"energy crisis\" OR \"natural gas\") domain:reuters.com sourcelang:english': ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); attempt 1"
+    },
+    {
+      "attempt_in_logical_request": 2,
+      "log_line": 46,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:17:21,470",
+      "logical_end": "20210902000000",
+      "logical_start": "20210901000000",
+      "message": "GDELT transport failure for 20210901000000..20210902000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)); attempt 2"
+    },
+    {
+      "attempt_in_logical_request": 1,
+      "log_line": 66,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:22:07,281",
+      "logical_end": "20210903000000",
+      "logical_start": "20210902000000",
+      "message": "GDELT transport failure for 20210902000000..20210903000000 query='(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english': HTTPSConnectionPool(host='api.gdeltproject.org', port=443): Max retries exceeded with url: /api/v2/doc/doc?query=%28sanction+OR+sanctions+OR+embargo+OR+%22asset+freeze%22+OR+%22export+restriction%22%29+domain%3Areuters.com+sourcelang%3Aenglish&mode=artlist&format=json&maxrecords=250&startdatetime=20210901235959&enddatetime=20210903000001&sort=dateasc (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x000002927AB6AFD0>: Failed to resolve 'api.gdeltproject.org' ([Errno 11002] getaddrinfo failed)\")); attempt 1"
+    },
+    {
+      "attempt_in_logical_request": 1,
+      "log_line": 96,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:28:10,473",
+      "logical_end": "20210903000000",
+      "logical_start": "20210902000000",
+      "message": "GDELT transport failure for 20210902000000..20210903000000 query='(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english': ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); attempt 1"
+    },
+    {
+      "attempt_in_logical_request": 4,
+      "log_line": 102,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:29:31,146",
+      "logical_end": "20210903000000",
+      "logical_start": "20210902000000",
+      "message": "GDELT transport failure for 20210902000000..20210903000000 query='(sanction OR sanctions OR embargo OR \"asset freeze\" OR \"export restriction\") domain:reuters.com sourcelang:english': ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)); attempt 4"
+    },
+    {
+      "attempt_in_logical_request": 1,
+      "log_line": 172,
+      "logged_at_local_unspecified_zone": "2026-09-09 15:58:15,558",
+      "logical_end": "20210904000000",
+      "logical_start": "20210903000000",
+      "message": "GDELT transport failure for 20210903000000..20210904000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': HTTPSConnectionPool(host='api.gdeltproject.org', port=443): Read timed out. (read timeout=60.0); attempt 1"
+    },
+    {
+      "attempt_in_logical_request": 5,
+      "log_line": 180,
+      "logged_at_local_unspecified_zone": "2026-09-09 16:05:25,219",
+      "logical_end": "20210904000000",
+      "logical_start": "20210903000000",
+      "message": "GDELT transport failure for 20210903000000..20210904000000 query='(coup OR unrest OR impeachment OR \"political crisis\") domain:reuters.com sourcelang:english': HTTPSConnectionPool(host='api.gdeltproject.org', port=443): Max retries exceeded with url: /api/v2/doc/doc?query=%28coup+OR+unrest+OR+impeachment+OR+%22political+crisis%22%29+domain%3Areuters.com+sourcelang%3Aenglish&mode=artlist&format=json&maxrecords=250&startdatetime=20210902235959&enddatetime=20210904000001&sort=dateasc (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x0000020744333110>: Failed to resolve 'api.gdeltproject.org' ([Errno 11001] getaddrinfo failed)\")); attempt 5"
+    }
+  ],
+  "observed_transport_failure_count": 7,
+  "pilot_end": "2021-09-07",
+  "pilot_start": "2021-09-01",
+  "runtime_versions": {
+    "openpyxl": "3.1.5",
+    "pandas": "2.2.3",
+    "pytest": "9.1.1",
+    "python": "3.13.3",
+    "requests": "2.32.3",
+    "yaml": "6.0.3"
+  },
+  "tests": {
+    "failed": 0,
+    "passed": 213,
+    "skipped": 0
+  },
+  "trailing_partial_line_ignored": false,
+  "unobserved_in_flight_attempt_count": null
+}
