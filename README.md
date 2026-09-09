@@ -19,11 +19,11 @@ An end-to-end NLP and analytical pipeline to investigate whether global geopolit
 ## Task 1: Data Acquisition & Strategic Preprocessing
 
 ### Data Sources
-- **News Data**: GDELT Project (global geopolitical event database)
+- **News Data**: 
 - **Exchange Rate Data**: Bank Indonesia JISDOR (USD/IDR daily rate, Sep 2021 – Sep 2026)
 
 ### Pipeline Steps
-1. **Scraping** — Collect 5 years of geopolitical news articles from GDELT
+1. **Scraping** — Collect 5 years of geopolitical news articles from ....
 2. **Filtering** — Remove irrelevant/noisy articles, retain geopolitically relevant content
 3. **Preprocessing** — Clean text (lowercasing, HTML removal, tokenization, stopword removal, lemmatization)
 4. **Alignment** — Map news to trading days (weekend/holiday news → next business day's JISDOR rate)
