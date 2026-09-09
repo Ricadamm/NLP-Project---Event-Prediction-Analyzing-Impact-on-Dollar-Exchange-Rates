@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "generated_at_utc": "2026-09-09T08:01:14.360407+00:00",
+  "source": "Bank Indonesia JISDOR USD/IDR",
+  "policies": {
+    "blank_rows": "Ignore only entirely blank rows below the header.",
+    "invalid_or_missing_values": "Fail; retain source row and raw values in this report.",
+    "duplicates": "Fail on every duplicate date, including identical observations.",
+    "date_parsing": "pandas parsing of datetime cells or complete YYYY-MM-DD / MM/DD/YYYY strings with optional time; reject numeric serials and partial dates; normalize daily.",
+    "rate_parsing": "Keep numeric cells unchanged; strip Rp/IDR and whitespace in strings; groups of three after dot/comma are thousands; otherwise accept dot/comma decimals.",
+    "financial_values": "Require finite positive rates; no imputation, rescaling, interpolation, or outlier removal.",
+    "expected_values": "Comparison only; discrepancies do not modify or reject otherwise valid observations."
+  },
+  "output_path": "data/interim/jisdor/jisdor_clean.csv",
+  "output_valid": true,
+  "source_path": "data/raw/Informasi Kurs Jisdor.xlsx",
+  "source_sha256": "0a8492663f686e4857c33c08923a3c039941c12ae27f03ea31e2227d4ce07c49",
+  "sheet_names": [
+    "Informasi Kurs Jisdor"
+  ],
+  "selected_sheet": "Informasi Kurs Jisdor",
+  "header_row": 5,
+  "raw_sheet_rows": 1207,
+  "raw_rows": 1202,
+  "blank_rows_ignored": 0,
+  "header_rows_skipped": 5,
+  "empty_columns": [
+    4
+  ],
+  "row_count": 1202,
+  "clean_rows": 1202,
+  "missing_dates": 0,
+  "missing_jisdor": 0,
+  "invalid_dates": 0,
+  "invalid_jisdor": 0,
+  "duplicate_dates": 0,
+  "duplicate_records": [],
+  "invalid_records": [],
+  "start_date": "2021-09-01",
+  "end_date": "2026-09-01",
+  "jisdor_dtype": "int64",
+  "chronologically_sorted": true,
+  "min_jisdor": 14080.0,
+  "max_jisdor": 18171.0,
+  "expected_comparison": {
+    "row_count": {
+      "expected": 1202,
+      "actual": 1202,
+      "matches": true
+    },
+    "start_date": {
+      "expected": "2021-09-01",
+      "actual": "2021-09-01",
+      "matches": true
+    },
+    "end_date": {
+      "expected": "2026-09-01",
+      "actual": "2026-09-01",
+      "matches": true
+    },
+    "duplicate_dates": {
+      "expected": 0,
+      "actual": 0,
+      "matches": true
+    }
+  },
+  "expected_discrepancies": [],
+  "output_sha256": "b550892c0c06e5f4501656b35230c10f789e0306d3dfef25498c3ba4a5e67b29"
+}

@@ -25,3 +25,21 @@ Thumbs.db
 # Large data files (keep only samples in repo)
 *.zip
 *.tar.gz
+
+# Task 1 runtime state and caches (small pilot samples and QA remain tracked)
+.pytest_cache/
+logs/
+work/
+*.tmp
+data/raw/news/gdelt/_checkpoints/
+# Keep the authorized September 2021 pilot raw evidence; ignore other history.
+data/raw/news/gdelt/*/
+!data/raw/news/gdelt/2021/
+data/raw/news/gdelt/2021/*/
+!data/raw/news/gdelt/2021/2021-09-01/
+!data/raw/news/gdelt/2021/2021-09-02/
+!data/raw/news/gdelt/2021/2021-09-03/
+!data/raw/news/gdelt/2021/2021-09-04/
+!data/raw/news/gdelt/2021/2021-09-05/
+!data/raw/news/gdelt/2021/2021-09-06/
+!data/raw/news/gdelt/2021/2021-09-07/
