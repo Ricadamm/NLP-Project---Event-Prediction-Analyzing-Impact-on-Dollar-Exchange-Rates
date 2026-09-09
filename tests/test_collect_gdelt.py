@@ -226,6 +226,88 @@ def test_minimum_saturation_saved_and_reported_incomplete(tmp_path, config, taxo
     assert not report["exhaustive_retrieval_claimed"]
 
 
+def test_wrong_year_capped_response_fails_once_retains_raw_and_remains_retryable(tmp_path, config, taxonomy):
+    wrong_period = [article(str(index), "20260901T120000Z") for index in range(250)]
+    client = FakeClient([wrong_period])
+    report = run(tmp_path, config, taxonomy, client)
+    assert len(client.calls) == 1
+    assert report["window_status_counts"] == {"failed": 1}
+    assert report["all_raw_response_records"] == 250
+    assert report["raw_returned_records"] == report["unique_articles"] == 0
+    assert not report["timestamp_scope_consistent"]
+    assert not report["collection_complete"]
+    state = checkpoints(tmp_path / "raw")[0]
+    envelope = json.loads((tmp_path / "raw" / state["raw_file"]).read_text())
+    assert state["response_scope_mismatch"] and envelope["response_scope_mismatch"]
+    assert envelope["status"] == "failed"
+    assert len(envelope["records"]) == 250
+    assert envelope["records"][0]["seendate"] == "20260901T120000Z"
+    assert envelope["records"][0]["requested_start"] == "20210831235959"
+    resumed = run(tmp_path, config, taxonomy, FakeClient([[article("recovered")]]))
+    assert resumed["collection_complete"]
+    assert resumed["all_raw_response_records"] == 251
+    assert resumed["this_run_http"]["request_count"] == 1
+    assert checkpoints(tmp_path / "raw")[0]["attempt"] == 2
+    assert len(list((tmp_path / "raw").rglob("*.attempt-*.json"))) == 2
+
+
+def test_normal_in_window_cap_splits_and_all_raw_count_includes_parent(tmp_path, config, taxonomy):
+    config["api"].update(max_records=2, minimum_window_minutes=720)
+    client = FakeClient([
+        [article("parent-left", "20210901T030000Z"), article("parent-right", "20210901T180000Z")],
+        [article("left", "20210901T030000Z")], [article("right", "20210901T180000Z")],
+    ], max_records=2)
+    report = run(tmp_path, config, taxonomy, client)
+    assert len(client.calls) == 3
+    assert report["window_status_counts"] == {"split": 1, "completed": 2}
+    assert report["all_raw_response_records"] == 4
+    assert report["raw_returned_records"] == report["unique_articles"] == 2
+    assert report["collection_complete"]
+
+
+def test_legacy_wrong_period_split_cache_is_refetched_without_traversing_children(tmp_path):
+    settings = {"minimum_window_minutes": 720}
+    initial = collector.WindowCollector(FakeClient([
+        [article("one"), article("two")], [], [],
+    ], max_records=2), settings, tmp_path)
+    initial.visit("war", "reuters.com", QUERY, START, END)
+    parent = next(state for state in checkpoints(tmp_path) if state["status"] == "split")
+    parent_file = tmp_path / parent["raw_file"]
+    envelope = json.loads(parent_file.read_text())
+    for record in envelope["records"]:
+        record["seendate"] = "20260901T120000Z"
+    parent_file.write_text(json.dumps(envelope))
+    wrong_period = [article("one", "20260901T120000Z"), article("two", "20260901T120000Z")]
+    client = FakeClient([wrong_period], max_records=2)
+    resumed = collector.WindowCollector(client, settings, tmp_path)
+    assert resumed.visit("war", "reuters.com", QUERY, START, END) == []
+    assert len(client.calls) == len(resumed.nodes) == 1
+    assert next(iter(resumed.nodes.values()))["status"] == "failed"
+    assert parent_file.exists()
+
+
+def test_scope_guard_requires_exact_valid_gdelt_timestamps():
+    params = FakeClient().request_parameters(QUERY, START, END)
+    assert collector.entirely_outside_request([article("wrong", "20260901T120000Z")], params)
+    assert not collector.entirely_outside_request([article("short", "20260901T1Z")], params)
+    assert not collector.entirely_outside_request([article("missing", None)], params)
+
+
+@pytest.mark.parametrize("outside_seen", ["20210902T001500Z", "invalid-date"])
+def test_mixed_or_invalid_timestamp_cap_is_retained_for_ordinary_qa(tmp_path, config, taxonomy, outside_seen):
+    config["api"].update(max_records=2, minimum_window_minutes=1440)
+    client = FakeClient([[article("inside"), article("other", outside_seen)]], max_records=2)
+    report = run(tmp_path, config, taxonomy, client)
+    assert len(client.calls) == 1
+    assert report["window_status_counts"] == {"saturated": 1}
+    assert not report["failed_windows"]
+    assert report["all_raw_response_records"] == report["raw_returned_records"] == 2
+    if outside_seen == "invalid-date":
+        assert report["invalid_timestamps"] == 1
+    else:
+        assert len(report["unexpected_out_of_window_records"]) == 1
+
+
 @pytest.mark.parametrize("failed", [False, True])
 def test_valid_zero_results_distinguished_from_request_failure(tmp_path, config, taxonomy, failed):
     report = run(tmp_path, config, taxonomy, FakeClient([GdeltError("HTTP unavailable") if failed else []]))

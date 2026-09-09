@@ -52,6 +52,29 @@ def timestamp(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
+def entirely_outside_request(records: list[dict], params: dict) -> bool:
+    """Conclude wrong scope only when every record has a valid outside timestamp.
+
+    Missing/invalid timestamps and mixed in/out-of-window responses do not
+    establish that the API ignored the whole request. Their ordinary QA remains
+    the cleaner's responsibility, and all raw values are retained unchanged.
+    """
+    if not records:
+        return False
+    lower = datetime.strptime(params["startdatetime"], "%Y%m%d%H%M%S").replace(tzinfo=UTC)
+    upper = datetime.strptime(params["enddatetime"], "%Y%m%d%H%M%S").replace(tzinfo=UTC)
+    for record in records:
+        try:
+            seen = datetime.strptime(record.get("seendate", ""), "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
+        except (TypeError, ValueError):
+            return False
+        if seen.strftime("%Y%m%dT%H%M%SZ") != record.get("seendate"):
+            return False
+        if lower <= seen <= upper:
+            return False
+    return True
+
+
 def load_settings(config_path: Path, topics_path: Path) -> tuple[dict, dict]:
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     taxonomy = yaml.safe_load(topics_path.read_text(encoding="utf-8"))
@@ -112,6 +135,11 @@ class WindowCollector:
                             record.get("query_string") != query
                             for record in envelope["records"])):
                     raise ValueError("Checkpoint/raw identity mismatch")
+                if (len(envelope["records"]) >= self.client.max_records
+                        and entirely_outside_request(envelope["records"], expected_params)):
+                    # Old checkpoints may predate the scope guard. Revalidate
+                    # once through HTTP instead of traversing a wrong-period tree.
+                    raise ValueError("Cached capped response is entirely outside the requested period")
                 cached = True
                 self.cache_hits += 1
                 LOG.info("Resume %s %s %s -> %s", topic, domain, timestamp(start), state["status"])
@@ -125,7 +153,8 @@ class WindowCollector:
                 attempt += 1
                 relative = relative.with_name(f"{key}.attempt-{attempt:04}.json")
             state = {**identity, "attempt": attempt, "status": "pending",
-                     "stats": dict(previous.get("stats", {})), "raw_file": relative.as_posix()}
+                     "stats": dict(previous.get("stats", {})), "raw_file": relative.as_posix(),
+                     "all_raw_response_records": previous.get("all_raw_response_records", previous.get("returned_count", 0))}
             atomic_json(checkpoint, state)
             before = dict(self.client.stats)
             envelope = {"identity": identity, "status": "pending", "records": []}
@@ -141,7 +170,19 @@ class WindowCollector:
                               "logical_start": timestamp(start), "logical_end": timestamp(end),
                               "retrieved_at_utc": retrieved}
                 records = [{**article, **provenance} for article in articles]
+                # Preserve a received payload before evaluating it, including a
+                # failed wrong-period response that must never feed cleaning.
+                envelope.update(records=records, retrieved_at_utc=retrieved, returned_count=len(records))
+                state["returned_count"] = len(records)
+                state["all_raw_response_records"] += len(records)
                 saturated = len(articles) >= self.client.max_records
+                if saturated and entirely_outside_request(records, params):
+                    state["response_scope_mismatch"] = True
+                    envelope["response_scope_mismatch"] = True
+                    raise GdeltError(
+                        f"All {len(records)} capped response records fall outside actual HTTP request bounds; "
+                        "retained as failed raw evidence without splitting. Resume this window later."
+                    )
                 children = split_window(start, end, self.minimum) if saturated else None
                 status = "split" if children else ("saturated" if saturated else "completed")
                 envelope.update(status=status, records=records, request_parameters=params,
@@ -245,6 +286,7 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
     _, cleaning = write_clean_outputs(in_scope, clean_path, output_dir / "gdelt_news_cleaning_report.json")
     states = list(worker.nodes.values())
     failed = [state for state in states if state["status"] == "failed"]
+    scope_failed = [state for state in failed if state.get("response_scope_mismatch")]
     saturated = [state for state in states if state["status"] == "saturated"]
     totals = {name: sum(state.get("stats", {}).get(name, 0) for state in states) for name in STAT_KEYS}
     snapshot = {"config": config, "taxonomy": taxonomy}
@@ -253,13 +295,14 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
               "topics_queried": selected_topics, "domains_queried": selected_domains,
               "source_language": language, "planned_daily_jobs": len(jobs),
               "raw_returned_records": len(records), "records_sent_to_cleaner": len(in_scope),
+              "all_raw_response_records": sum(state.get("all_raw_response_records", state.get("returned_count", 0)) for state in states),
               "excluded_boundary_records": len(spillover),
               "unexpected_out_of_window_records": scope_mismatches,
               "failed_windows": failed, "saturated_minimum_size_windows": saturated,
               "pending_jobs": pending, "collection_complete": not (failed or saturated or pending or scope_mismatches),
               "request_windows_completed": not (failed or pending),
               "unsaturated_retrieval": not saturated,
-              "timestamp_scope_consistent": not scope_mismatches,
+              "timestamp_scope_consistent": not (scope_mismatches or scope_failed),
               "exhaustive_retrieval_claimed": False, "checkpoint_cache_hits": worker.cache_hits,
               "window_status_counts": dict(Counter(state["status"] for state in states)),
               **totals, "this_run_http": {name: worker.new_stats[name] for name in STAT_KEYS},
@@ -272,12 +315,17 @@ def collect(config: dict, taxonomy: dict, start_date: date, end_date: date, *,
         "Terminal response occurrences only (split parents excluded): unique_articles + "
         "duplicate_records + quarantined_records + excluded_boundary_records")
     report["count_definitions"]["records_sent_to_cleaner"] = "In-scope occurrences, including invalid timestamps for explicit QA"
+    report["count_definitions"]["all_raw_response_records"] = (
+        "Cumulative saved response occurrences across attempts for visited checkpoint windows, "
+        "including split parents and failed wrong-period responses; excludes unrelated/orphaned windows")
     if failed or pending:
         report["warnings"].append("Pilot/collection is incomplete: failed or pending requests are not zero-news observations.")
     if saturated:
         report["warnings"].append("Minimum-size saturated intervals may be truncated.")
     if scope_mismatches:
         report["warnings"].append("API timestamp scope mismatch: some returned seendate values fall outside submitted bounds. Precise DOC boundary/index-time semantics remain unverified; raw timestamps are retained without adjustment.")
+    if scope_failed:
+        report["warnings"].append("Capped responses entirely outside actual request bounds were saved as failed, retryable raw evidence; splitting was suppressed to avoid repeatedly querying an ignored period.")
     if not records:
         report["warnings"].append("No candidate records were available to clean; an empty CSV does not establish historical absence.")
     report_path = output_dir / ("gdelt_pilot_report.json" if pilot else "gdelt_collection_report.json")

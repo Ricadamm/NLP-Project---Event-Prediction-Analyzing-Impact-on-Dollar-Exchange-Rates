@@ -140,6 +140,10 @@ potentially truncated, so the window splits into smaller intervals. Midpoints
 use minimum-window units, allowing daily trees to reach 15-minute leaves
 without zero-duration calls or gaps. Capped terminal intervals retain their
 data, log a critical warning, and make QA `collection_complete: false`.
+If every record in a capped response has a valid timestamp outside the actual
+submitted bounds, the full response is saved as failed, retryable evidence and
+splitting stops. Mixed timestamps and ordinary boundary discrepancies continue
+through explicit QA; no raw timestamp is adjusted.
 
 The API documentation does not establish a formal endpoint inclusivity
 contract. Each logical interval is padded by one second on both sides; actual
@@ -243,7 +247,11 @@ parent responses are raw evidence but do not count as terminal returned
 records. Counts reconcile as terminal raw = boundary exclusions + unique
 articles + duplicate occurrences + quarantined occurrences. Historic HTTP
 counters include selected checkpoint history; `this_run_http` counts only new
-network activity. An empty CSV after failure is a schema-bearing artifact,
+network activity. A forced process termination can leave an interrupted attempt's
+counters uncheckpointed; runtime log observations must be reported separately,
+without guessing unknown in-flight outcomes. `all_raw_response_records` includes
+saved split-parent and failed-response evidence for visited windows as well as
+terminal records. An empty CSV after failure is a schema-bearing artifact,
 not proof that there was no news.
 
 Standalone recleaning is also available:
