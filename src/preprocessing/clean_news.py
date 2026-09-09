@@ -240,7 +240,12 @@ def clean_records(records: Iterable[Mapping[str, Any]]) -> tuple[pd.DataFrame, d
         rows.append(row)
 
     frame = pd.DataFrame(rows, columns=COLUMNS)
-    frame["published_at_utc"] = pd.to_datetime(frame["published_at_utc"], utc=True)
+    # State the resolution instead of inheriting whatever pandas infers: an empty
+    # frame carries no timestamps to infer from, and pandas 3 settles on seconds
+    # where pandas 2 chose nanoseconds. parse_timestamp already normalizes every
+    # value to nanoseconds, so pinning it here keeps the CSV schema identical
+    # across pandas versions and between empty and populated runs.
+    frame["published_at_utc"] = pd.to_datetime(frame["published_at_utc"], utc=True).dt.as_unit("ns")
     frame["published_at_wib"] = frame["published_at_utc"].dt.tz_convert("Asia/Jakarta")
     frame = frame.sort_values(["published_at_utc", "normalized_url"], na_position="last").reset_index(drop=True)
     times = frame["published_at_utc"].dropna()

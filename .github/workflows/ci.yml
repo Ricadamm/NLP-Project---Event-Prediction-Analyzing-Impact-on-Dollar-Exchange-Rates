@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  reproducibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: Regenerate the tracked clean JISDOR CSV and assert it is byte-identical
+        # The tracked data/interim/jisdor/jisdor_clean.csv must regenerate exactly
+        # from the tracked Bank Indonesia workbook (data/raw/Informasi Kurs Jisdor.xlsx).
+        # Only the CSV is checked: jisdor_cleaning_report.json embeds generated_at_utc
+        # and legitimately changes between runs, so it is deliberately not diffed.
+        run: |
+          python -m src.preprocessing.clean_jisdor
+          git diff --exit-code -- data/interim/jisdor/jisdor_clean.csv
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install ruff
+      - run: ruff check .
